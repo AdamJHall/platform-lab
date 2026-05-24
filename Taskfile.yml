@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+tasks:
+  plan:*:
+    desc: Plan all units in an environment (e.g. task plan:dev)
+    vars:
+      ENV: '{{index .MATCH 0}}'
+    dir: terraform/environments/{{.ENV}}
+    cmds:
+      - terragrunt run --all plan
+
+  apply:*:
+    desc: Apply all units in an environment (e.g. task apply:dev)
+    vars:
+      ENV: '{{index .MATCH 0}}'
+    dir: terraform/environments/{{.ENV}}
+    cmds:
+      - terragrunt run --all apply
+
+  destroy:*:
+    desc: Destroy all units in an environment (e.g. task destroy:dev)
+    vars:
+      ENV: '{{index .MATCH 0}}'
+    dir: terraform/environments/{{.ENV}}
+    cmds:
+      - terragrunt run --all destroy

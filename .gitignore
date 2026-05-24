@@ -1,0 +1,9 @@
+# Terragrunt
+.terragrunt-cache
+.terragrunt-stack
+
+# OpenTofu/Terraform
+.terraform
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
