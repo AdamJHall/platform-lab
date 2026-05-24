@@ -3,4 +3,3 @@ aws-cli = { version = "2.34.53", symlink_bins = "true" }
 task = "3.51.1"
 terraform = "1.15.4"
 terragrunt = "1.0.5"
-tflint = "0.62.1"
