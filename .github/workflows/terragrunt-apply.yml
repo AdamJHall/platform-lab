@@ -1,0 +1,35 @@
+name: Terraform Apply
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+
+# Queue apply runs rather than cancelling them
+concurrency:
+  group: tf-apply
+  cancel-in-progress: false
+
+jobs:
+  apply-dev:
+    name: Apply (dev)
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59 # v6.1.3
+        with:
+          role-to-assume: ${{ vars.APPLY_ROLE_ARN }}
+          aws-region: ap-southeast-2
+      - name: Terragrunt Apply
+        uses: gruntwork-io/terragrunt-action@4ed5b7344c80315e5357f28f36159fc980bc2d5a # v3.4.0
+        with:
+          tg_dir: ${{ vars.ENVIRONMENT_DIR }}
+          tg_command: run --all apply -- -input=false -no-color

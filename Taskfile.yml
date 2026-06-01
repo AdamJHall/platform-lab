@@ -3,6 +3,30 @@
 version: '3'
 
 tasks:
+  lint:
+    desc: Run all workflow linting checks
+    deps: [yamllint, actionlint, zizmor]
+
+  yamllint:
+    desc: Lint YAML files
+    cmds:
+      - yamllint .
+
+  actionlint:
+    desc: Lint GitHub Actions workflow files
+    cmds:
+      - actionlint
+
+  zizmor:
+    desc: Run security analysis on GitHub Actions workflows
+    cmds:
+      - zizmor .github/
+
+  zizmor-fix:
+    desc: Auto-fix zizmor security findings (safe fixes only)
+    cmds:
+      - zizmor --fix .github/
+
   plan:*:
     desc: Plan all units in an environment (e.g. task plan:dev)
     vars:
