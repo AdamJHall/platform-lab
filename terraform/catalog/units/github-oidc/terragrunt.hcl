@@ -7,7 +7,8 @@ terraform {
 }
 
 inputs = {
-  github_org        = values.github_org
-  github_repo       = values.github_repo
-  environment       = values.environment
+  github_org   = values.github_org
+  github_repo  = values.github_repo
+  environment  = values.environment
+  state_bucket = values.state_bucket
 }
