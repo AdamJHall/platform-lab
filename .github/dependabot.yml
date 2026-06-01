@@ -9,7 +9,7 @@ updates:
 
   - package-ecosystem: opentofu
     directories:
-      - /terraform/**/*
+      - /terraform/catalog/**/*.tf
     schedule:
       interval: weekly
     cooldown:
