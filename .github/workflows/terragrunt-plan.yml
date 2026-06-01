@@ -118,7 +118,7 @@ jobs:
             const body = [
               `${header} ${status}`,
               '',
-              '<details open>',
+              '<details>',
               '<summary>Plan output</summary>',
               '',
               '```',
