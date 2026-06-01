@@ -1,0 +1,122 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+
+# Cancel in-progress plan run for the same PR
+concurrency:
+  group: tf-plan-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  detect-changes:
+    name: Detect changed environments
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      environments: ${{ steps.detect.outputs.environments }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Detect changed environments
+        id: detect
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          CHANGED=$(git diff --name-only "origin/$BASE_REF...HEAD")
+
+          # A catalog change (module/unit/stack) can affect every environment,
+          # so plan them all. Otherwise, only plan environments with direct changes.
+          if echo "$CHANGED" | grep -q '^terraform/catalog/'; then
+            ENVS=$(find terraform/environments \
+              -maxdepth 1 -mindepth 1 -type d \
+              -printf '%f\n' | sort \
+              | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          else
+            ENVS=$(echo "$CHANGED" \
+              | grep '^terraform/environments/' \
+              | sed 's|terraform/environments/\([^/]*\)/.*|\1|' \
+              | sort -u \
+              | jq -R -s -c 'split("\n") | map(select(. != ""))')
+          fi
+
+          echo "environments=$ENVS" >> "$GITHUB_OUTPUT"
+          echo "Changed environments: $ENVS"
+
+  plan:
+    name: Plan (${{ matrix.environment }})
+    needs: detect-changes
+    if: needs.detect-changes.outputs.environments != '[]' && needs.detect-changes.outputs.environments != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJson(needs.detect-changes.outputs.environments) }}
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.environment }}
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59 # v6.1.3
+        with:
+          role-to-assume: ${{ vars.PLAN_ROLE_ARN }}
+          aws-region: ap-southeast-2
+
+      - name: Terragrunt Plan
+        id: plan
+        uses: gruntwork-io/terragrunt-action@4ed5b7344c80315e5357f28f36159fc980bc2d5a # v3.4.0
+        with:
+          tg_dir: ${{ vars.ENVIRONMENT_DIR }}
+          tg_command: run --all plan -- -no-color -input=false
+
+      - name: Post plan comment
+        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
+        if: always()
+        env:
+          PLAN_OUTPUT: ${{ steps.plan.outputs.tg_action_output }}
+          ENVIRONMENT: ${{ matrix.environment }}
+          PLAN_OUTCOME: ${{ steps.plan.outcome }}
+        with:
+          script: |
+            const raw = process.env.PLAN_OUTPUT || '';
+            const maxLen = 60000;
+            const output = raw.length > maxLen
+              ? raw.slice(0, maxLen) + '\n\n> Output truncated — see full log in Actions.'
+              : raw;
+
+            const header = `## Plan: \`${process.env.ENVIRONMENT}\``;
+            const status = process.env.PLAN_OUTCOME === 'success' ? '✅' : '❌';
+
+            // Remove any previous plan comment for this environment so the PR
+            // stays uncluttered when the branch is updated.
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.issue.number,
+            });
+            for (const c of comments) {
+              if (c.user.type === 'Bot' && c.body.startsWith(header)) {
+                await github.rest.issues.deleteComment({ ...context.repo, comment_id: c.id });
+              }
+            }
+
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: `${header} ${status}\n\n<details open>\n<summary>Plan output</summary>\n\n\`\`\`\n${output}\n\`\`\`\n</details>`,
+            });
