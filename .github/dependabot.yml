@@ -8,7 +8,8 @@ updates:
       default-days: 7
 
   - package-ecosystem: opentofu
-    directory: /terraform
+    directories:
+      - /terraform/**/*
     schedule:
       interval: weekly
     cooldown:
