@@ -94,7 +94,7 @@ jobs:
           PLAN_OUTCOME: ${{ steps.plan.outcome }}
         with:
           script: |
-            const raw = process.env.PLAN_OUTPUT || '';
+            const raw = (process.env.PLAN_OUTPUT || '').replace(/%0A/g, '\n');
             const maxLen = 60000;
             const output = raw.length > maxLen
               ? raw.slice(0, maxLen) + '\n\n> Output truncated — see full log in Actions.'
@@ -115,8 +115,20 @@ jobs:
               }
             }
 
+            const body = [
+              `${header} ${status}`,
+              '',
+              '<details open>',
+              '<summary>Plan output</summary>',
+              '',
+              '```',
+              output,
+              '```',
+              '</details>',
+            ].join('\n');
+
             await github.rest.issues.createComment({
               ...context.repo,
               issue_number: context.issue.number,
-              body: `${header} ${status}\n\n<details open>\n<summary>Plan output</summary>\n\n\`\`\`\n${output}\n\`\`\`\n</details>`,
+              body,
             });
