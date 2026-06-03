@@ -3,6 +3,12 @@
 version: '3'
 
 tasks:
+  install:
+    desc: Install dependencies and pre-commit git hook
+    cmds:
+      - mise install
+      - pre-commit install
+
   lint:
     desc: Run all workflow linting checks
     deps: [yamllint, actionlint, zizmor]
@@ -27,7 +33,30 @@ tasks:
     cmds:
       - zizmor --fix .github/
 
-  plan:*:
+  tf:clean:
+    desc: Remove local Terraform and Terragrunt caches
+    cmds:
+      - find . -type d -name '.terraform' -exec rm -rf {} +
+      - find . -type d -name '.terragrunt-cache' -exec rm -rf {} +
+      - find . -type d -name '.terragrunt-stack' -exec rm -rf {} +
+      - find . -name '.terraform.lock.hcl' -delete
+
+  tf:fmt:
+    desc: Format all Terraform files
+    cmds:
+      - tofu fmt -recursive terraform/
+
+  tf:validate:
+    desc: Validate all catalog modules
+    cmds:
+      - |
+        find terraform/catalog/modules -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+          echo "--- Validating $dir ---"
+          tofu -chdir="$dir" init -backend=false
+          tofu -chdir="$dir" validate
+        done
+
+  tf:plan:*:
     desc: Plan all units in an environment (e.g. task plan:dev)
     vars:
       ENV: '{{index .MATCH 0}}'
@@ -35,7 +64,7 @@ tasks:
     cmds:
       - terragrunt run --all plan
 
-  apply:*:
+  tf:apply:*:
     desc: Apply all units in an environment (e.g. task apply:dev)
     vars:
       ENV: '{{index .MATCH 0}}'
@@ -43,7 +72,7 @@ tasks:
     cmds:
       - terragrunt run --all apply
 
-  destroy:*:
+  tf:destroy:*:
     desc: Destroy all units in an environment (e.g. task destroy:dev)
     vars:
       ENV: '{{index .MATCH 0}}'

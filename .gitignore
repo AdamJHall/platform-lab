@@ -4,6 +4,7 @@
 
 # OpenTofu/Terraform
 .terraform
+.terraform.lock.hcl
 *.tfstate
 *.tfstate.backup
 *.tfstate.lock.info
