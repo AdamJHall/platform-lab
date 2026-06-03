@@ -1,6 +1,6 @@
 data "aws_iam_policy_document" "state_access_policy" {
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "s3:ListBucket",
       "s3:GetBucketLocation"
@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "state_access_policy" {
   }
 
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = [
       "s3:GetObject",
       "s3:PutObject",
@@ -57,10 +57,10 @@ module "apply" {
   create_oidc_provider = false
   oidc_provider_arn    = module.plan.oidc_provider_arn
 
-  create_oidc_role          = true
-  role_name                 = "github-apply-${var.environment}"
-  role_description          = "Role used for applying updates in Github workflows."
-  repositories              = ["${var.github_org}/${var.github_repo}"]
+  create_oidc_role = true
+  role_name        = "github-apply-${var.environment}"
+  role_description = "Role used for applying updates in Github workflows."
+  repositories     = ["${var.github_org}/${var.github_repo}:ref:refs/heads/main"]
   # TODO: Restrict to only resources required
   oidc_role_attach_policies = ["arn:aws:iam::aws:policy/AdministratorAccess"]
 
