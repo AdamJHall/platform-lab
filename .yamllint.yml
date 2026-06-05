@@ -1,4 +1,6 @@
 extends: default
+ignore: |
+  **/.terraform/**
 rules:
   document-start: disable
   trailing-spaces: disable
