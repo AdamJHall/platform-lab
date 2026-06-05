@@ -60,7 +60,7 @@ module "apply" {
   create_oidc_role = true
   role_name        = "github-apply-${var.environment}"
   role_description = "Role used for applying updates in Github workflows."
-  repositories     = ["${var.github_org}/${var.github_repo}:ref:refs/heads/main"]
+  repositories     = ["${var.github_org}/${var.github_repo}:environment:${var.environment}"]
   # TODO: Restrict to only resources required
   oidc_role_attach_policies = ["arn:aws:iam::aws:policy/AdministratorAccess"]
 
