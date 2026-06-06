@@ -46,10 +46,12 @@ resource "aws_subnet" "public" {
   availability_zone       = each.key
   map_public_ip_on_launch = false
 
-  tags = {
+  tags = merge({
     Name        = "${var.name}-public-subnet-${each.key}"
     Environment = var.environment
-  }
+    },
+    var.subnet_tags.public
+  )
 }
 
 resource "aws_subnet" "private_with_egress" {
@@ -59,10 +61,12 @@ resource "aws_subnet" "private_with_egress" {
   cidr_block        = each.value
   availability_zone = each.key
 
-  tags = {
+  tags = merge({
     Name        = "${var.name}-private-egress-subnet-${each.key}"
     Environment = var.environment
-  }
+    },
+    var.subnet_tags.private_with_egress
+  )
 }
 
 resource "aws_subnet" "private" {
@@ -72,8 +76,10 @@ resource "aws_subnet" "private" {
   cidr_block        = each.value
   availability_zone = each.key
 
-  tags = {
+  tags = merge({
     Name        = "${var.name}-private-subnet-${each.key}"
     Environment = var.environment
-  }
+    },
+    var.subnet_tags.private
+  )
 }

@@ -15,5 +15,6 @@ unit "vpc" {
     nat_use_spot_instances = values.nat_use_spot_instances
     nat_instance_type      = values.nat_instance_type
     environment            = values.environment
+    subnet_tags            = values.subnet_tags
   }
 }

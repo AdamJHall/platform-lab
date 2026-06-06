@@ -76,3 +76,13 @@ variable "subnet_cidrs" {
     error_message = "All subnet CIDRs must fall within the VPC CIDR block."
   }
 }
+
+variable "subnet_tags" {
+  description = "Extra tags to add to each subnet."
+  type = object({
+    public              = optional(map(string), {})
+    private             = optional(map(string), {})
+    private_with_egress = optional(map(string), {})
+  })
+  default = {}
+}
