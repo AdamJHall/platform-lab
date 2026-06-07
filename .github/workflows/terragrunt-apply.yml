@@ -27,7 +27,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@99214aa6889fcddfa57764031d71add364327e59 # v6.1.3
         with:
           role-to-assume: ${{ vars.APPLY_ROLE_ARN }}
-          aws-region: ap-southeast-2
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Terragrunt Apply
         uses: gruntwork-io/terragrunt-action@4ed5b7344c80315e5357f28f36159fc980bc2d5a # v3.4.0
         with:

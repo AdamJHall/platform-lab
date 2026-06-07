@@ -34,9 +34,9 @@ jobs:
 
       - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
 
-      - name: Validate all catalog modules
+      - name: Validate all modules
         run: |
-          find terraform/catalog/modules -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+          find terraform/modules -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
             echo "--- Validating $dir ---"
             tofu -chdir="$dir" init -backend=false
             tofu -chdir="$dir" validate

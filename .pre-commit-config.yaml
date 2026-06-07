@@ -30,7 +30,7 @@ repos:
 
       - id: tofu-validate
         name: tofu validate
-        entry: bash -c 'find terraform/catalog/modules -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+        entry: bash -c 'find terraform/modules -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           echo "--- Validating $dir ---";
           tofu -chdir="$dir" init -backend=false;
           tofu -chdir="$dir" validate;

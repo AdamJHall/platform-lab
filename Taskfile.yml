@@ -47,10 +47,10 @@ tasks:
       - tofu fmt -recursive terraform/
 
   tf:validate:
-    desc: Validate all catalog modules
+    desc: Validate all modules
     cmds:
       - |
-        find terraform/catalog/modules -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+        find terraform/modules -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
           echo "--- Validating $dir ---"
           tofu -chdir="$dir" init -backend=false
           tofu -chdir="$dir" validate
