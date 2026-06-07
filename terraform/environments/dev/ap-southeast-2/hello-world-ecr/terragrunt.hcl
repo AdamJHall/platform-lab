@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "${get_repo_root()}//terraform/catalog/modules/ecr"
+  source = "${get_repo_root()}//terraform/modules/ecr"
 }
 
 dependency "github_oidc" {

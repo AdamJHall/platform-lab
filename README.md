@@ -6,12 +6,9 @@ A personal sandbox for learning Terraform and Kubernetes, using Terragrunt to ma
 
 ```
 terraform/
-├── catalog/
-│   ├── modules/    # Raw Terraform modules
-│   ├── units/      # Terragrunt wrappers around modules
-│   └── stacks/     # Compositions of units
+├── modules/        # Raw OpenTofu modules
 └── environments/
-    └── dev/        # Environment-specific stack instantiations
+    └── dev/        # Environment-specific Terragrunt units
 ```
 
 ## Prerequisites
@@ -44,7 +41,7 @@ task tf:destroy:dev   # destroy all units in dev
 
 ```bash
 task tf:fmt           # format all Terraform files
-task tf:validate      # validate all catalog modules
+task tf:validate      # validate all modules
 task tf:clean         # remove local Terraform and Terragrunt caches
 ```
 

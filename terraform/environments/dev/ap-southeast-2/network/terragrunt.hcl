@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "${get_repo_root()}//terraform/catalog/modules/vpc"
+  source = "${get_repo_root()}//terraform/modules/vpc"
 }
 
 inputs = {

@@ -34,9 +34,9 @@ jobs:
         run: |
           CHANGED=$(git diff --name-only "origin/$BASE_REF...HEAD")
 
-          # A catalog change (module/unit/stack) can affect every environment,
+          # A module change can affect every environment,
           # so plan them all. Otherwise, only plan environments with direct changes.
-          if echo "$CHANGED" | grep -q '^terraform/catalog/'; then
+          if echo "$CHANGED" | grep -q '^terraform/modules/'; then
             ENVS=$(find terraform/environments \
               -maxdepth 1 -mindepth 1 -type d \
               -printf '%f\n' | sort \
