@@ -20,5 +20,13 @@ stack "dev-network" {
     nat_use_spot_instances = true
     nat_instance_type      = "t4g.nano"
     environment            = local.environment
+    subnet_tags            = {
+      public = {
+        "kubernetes.io/role/elb" = "1"
+      }
+      private_with_egress = {
+        "kubernetes.io/role/internal-elb" = "1"
+      }
+    }
   }
 }
