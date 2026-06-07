@@ -4,7 +4,7 @@ locals {
 
 resource "aws_ecr_repository" "this" {
   name                 = var.name
-  image_tag_mutability = var.mutability
+  image_tag_mutability = var.mutable ? "MUTABLE" : "IMMUTABLE"
   image_scanning_configuration {
     scan_on_push = var.image_scanning_on_push
   }

@@ -9,19 +9,15 @@ variable "environment" {
 }
 
 variable "image_scanning_on_push" {
-  description = ""
+  description = "Enable / Disable image scanning on push to the repo."
   type        = bool
   default     = true
 }
 
-variable "mutability" {
+variable "mutable" {
   description = ""
-  type        = string
-  default     = "IMMUTABLE"
-  validation {
-    condition     = var.mutability == "MUTABLE" || var.mutability == "IMMUTABLE"
-    error_message = "mutability must be either MUTABLE or IMMUTABLE"
-  }
+  type        = bool
+  default     = false
 }
 
 variable "oidc_provider_arn" {
