@@ -1,0 +1,2 @@
+role: dev-cluster-karpenter-node
+discoveryTag: dev-cluster
