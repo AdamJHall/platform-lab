@@ -1,9 +1,12 @@
 [tools]
-actionlint = "1.7.12"
-pre-commit = "4.2.0"
-aws-cli = { version = "2.34.53", symlink_bins = "true" }
-opentofu = "1.12.0"
-task = "3.51.1"
-terragrunt = "1.0.5"
-yamllint = "1.38.0"
-zizmor = "1.25.2"
+actionlint = "latest"
+pre-commit = "latest"
+aws-cli = { version = "latest", symlink_bins = "true" }
+opentofu = "latest"
+task = "latest"
+terragrunt = "latest"
+yamllint = "latest"
+zizmor = "latest"
+k9s = "latest"
+kubectl = "latest"
+helm = "latest"
