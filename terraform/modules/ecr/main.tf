@@ -9,6 +9,10 @@ resource "aws_ecr_repository" "this" {
     scan_on_push = var.image_scanning_on_push
   }
 
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
   tags = {
     Name        = var.name
     Environment = var.environment
