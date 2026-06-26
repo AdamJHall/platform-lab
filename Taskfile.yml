@@ -56,6 +56,30 @@ tasks:
           tofu -chdir="$dir" validate
         done
 
+  k8s:auth:*:
+    desc: Fetch kubeconfig for an environment's EKS cluster (e.g. task k8s:auth:dev)
+    vars:
+      ENV: '{{index .MATCH 0}}'
+      ACCOUNT_ID:
+        sh: aws sts get-caller-identity --query Account --output text --profile '{{index .MATCH 0}}'
+    cmds:
+      - >
+        aws eks update-kubeconfig
+        --name {{.ENV}}-cluster
+        --alias {{.ENV}}
+        --role-arn arn:aws:iam::{{.ACCOUNT_ID}}:role/{{.ENV}}-cluster-eks-admin
+        --profile {{.ENV}}
+
+  cluster:bootstrap:*:
+    desc: Bootstrap ArgoCD for an environment (e.g. task cluster:bootstrap:dev)
+    vars:
+      ENV: '{{index .MATCH 0}}'
+    deps:
+      - task: k8s:auth:{{.ENV}}
+    cmds:
+      - kubectl apply -n argo -f cluster/bootstrap/projects/{{.ENV}}.yaml
+      - kubectl apply -n argo -f cluster/bootstrap/argocd.yaml
+
   tf:plan:*:
     desc: Plan all units in an environment (e.g. task plan:dev)
     vars:

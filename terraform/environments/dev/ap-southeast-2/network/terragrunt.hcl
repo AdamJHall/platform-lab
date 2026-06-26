@@ -25,6 +25,7 @@ inputs = {
     }
     private_with_egress = {
       "kubernetes.io/role/internal-elb" = "1"
+      "karpenter.sh/discovery"          = "dev-cluster"
     }
   }
 }

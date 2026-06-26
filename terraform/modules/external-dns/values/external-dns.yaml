@@ -1,0 +1,8 @@
+provider:
+  name: aws
+policy: upsert-only
+sources:
+  - ingress
+  - service
+serviceAccount:
+  name: ${service_account}

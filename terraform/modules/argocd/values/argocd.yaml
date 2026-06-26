@@ -1,0 +1,25 @@
+global:
+  domain: ${argocd_domain}
+
+configs:
+  params:
+    server.insecure: true
+
+server:
+  ingress:
+    enabled: true
+    controller: aws
+    ingressClassName: alb
+    hostname: ${argocd_domain}
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      alb.ingress.kubernetes.io/certificate-arn: ${cert_arn}
+      alb.ingress.kubernetes.io/group.name: ${alb_group}
+      external-dns.alpha.kubernetes.io/hostname: ${argocd_domain}
+    aws:
+      serviceType: ClusterIP
+      backendProtocolVersion: GRPC
